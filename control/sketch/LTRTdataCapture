@@ -1,0 +1,103 @@
+/*
+  LTRTdataCapture
+  
+  LNB feed voltage and ambient temperature sampler
+  
+  Reads a raw voltage input (0-5v) and maps it to digital output (0-1023)
+  Samples ambient temperature every ~5 seconds
+  Sends the output to the serial monitor in the form: 
+    [timestamp (milliseconds)] [digitally mapped voltage] [temperature]
+  
+  10 bit ADC
+  Sampling rate: ~1kHz
+  Receiver: Satellite Finder (Manually adjusted gain)
+  Temperature Sensor: Freetronics DS18B20
+  Micro-controller: Freetronics EtherTen
+  
+  DS18B20 Requirements: OneWire library http://playground.arduino.cc/Learning/OneWire
+                        A 1K0 pull-up resistor on bus wire
+               
+  DS18B20 Power mode: normal - bus wire (data), ground and power 
+ 
+  LT April 2013
+  
+ */
+
+#include <OneWire.h>
+
+int ampl_led = 11;
+int stat_led = 13;
+int cnt = 0;
+int16_t traw;
+double time;
+OneWire  ds(8);
+
+/* Setup */
+void setup() {
+  
+  // Initialise serial communication
+  Serial.begin(115200);
+
+  // Initialise output pins
+  pinMode(stat_led, OUTPUT);
+  pinMode(ampl_led, OUTPUT);
+  
+  // Status: firing up
+  for (int i=0; i<3; i++) {
+    digitalWrite(stat_led, HIGH);
+    delay(10);
+    digitalWrite(stat_led, LOW);
+    delay(10); 
+  }
+  
+  // Status: reading data
+  digitalWrite(ampl_led, HIGH);
+  
+}
+
+
+/* Main loop */
+void loop() {
+  
+  byte i;
+  byte present = 0;
+  byte data[3];
+  byte addr[8];
+  int16_t raw;
+  
+  // Sample the temperature every ~5 seconds
+  if (cnt == 0 || cnt%5000 == 0) {
+    
+    if ( !ds.search(addr)) {
+      ds.reset_search();
+      return;
+    }
+
+    ds.reset();
+    ds.select(addr);
+    ds.write(0x44, 1);
+  
+    present = ds.reset();
+    ds.select(addr);    
+    ds.write(0xBE);
+  
+    for ( i = 0; i < 2; i++) {
+      data[i] = ds.read();
+    }
+  
+    raw = (data[1] << 8) | data[0];
+    traw = raw;
+   
+  } 
+  
+  // Sample the feed voltage, and push the data to the serial port
+  time=millis();
+  Serial.print(time);
+  Serial.print(" ");
+  Serial.print(analogRead(0));
+  Serial.print(" ");
+  Serial.println(traw);
+  
+  cnt++;
+  
+}
