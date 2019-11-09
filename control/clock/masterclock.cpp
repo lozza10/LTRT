@@ -108,12 +108,13 @@ string get_lst(float deg) {
 string get_jd() {
 
   char strjd[80];
-  unsigned long int unixts=time(NULL);
+  time_t tt;
+  double unixts=time(NULL);
   float s=86400.0f;
   float jplus=2440587.5f;
 
   sprintf(strjd, "%.6f\n", unixts/s+jplus);
-
+ 
   return string(strjd);
 
 }
@@ -154,7 +155,7 @@ int main ()
   // Get Local time and UTC
   time(&ltime);
   tm *ltm = localtime(&ltime);
-  sprintf(tunix, "%u", time(NULL));
+  sprintf(tunix, "%lu", time(NULL));
   sprintf(tlocal, "%s", asctime(localtime(&ltime)));
   sprintf(tutc, "%s", asctime(gmtime(&ltime)));
   sprintf(tdate, "%d/%d/%d", ltm->tm_mday, 1+ltm->tm_mon, 1900+ltm->tm_year);
