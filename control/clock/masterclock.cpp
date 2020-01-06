@@ -20,10 +20,10 @@
 using namespace std;
 
 double lstdeg;
+float glong=151.098826; //LTRT longitude E, Marsfield NSW
+float glat=33.773749;   //LTRT latitude  S, Marsfield NSW
 float glong=151.086179; //LTRT longitude E, Hornsby NSW
 float glat=33.701816;   //LTRT latitude  S, Hornsby NSW
-//float glong=151.007831; //LTRT longitude E, Glenorie NSW
-//float glat=33.595944;   //LTRT latitude  S, Glenorie NSW
 char xlabel[80], tunix[80], tlocal[80], tutc[80], tdate[80];
 time_t ltime;
 string jd, lst;
