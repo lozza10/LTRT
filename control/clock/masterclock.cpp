@@ -46,7 +46,7 @@ double split_float(double num) {
 string get_lst(float deg) {
 
   char str[80], strhh[80], strmm[80], strss[80];
-  int hh=round(deg/15);
+  int hh=floor(deg/15);
   double hhdec=split_float(deg/15);
   double mmdbl=hhdec*60;
   int mm=round(mmdbl);
